@@ -1,15 +1,24 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from collections.abc import Callable
+from enum import StrEnum
 from typing import Generic, TypeVar, ParamSpec
 from minimal_agent.tools.types import ToolDesc, Arg
 
 ValueType = TypeVar("ValueType")
 ToolType = TypeVar('ToolType', bound='Tools')
+P = ParamSpec("P")
 
 class ToolDocsParser(ABC):
     def parse(self, func: Callable, content: str) -> ToolDesc: ...
 
-P = ParamSpec("P")
+
+class ToolsTypeEnum(StrEnum):
+    """Enum for tool types."""
+
+    SIMPLE_TOOL = "simple_tool"
+    CODE_EXECUTOR = "code_executor"
+    WEB_SEARCH = "web_search"
+    OTHER = "other"
 
 class Tools(Generic[P, ValueType]):
     def __init__(
@@ -21,6 +30,12 @@ class Tools(Generic[P, ValueType]):
             args=args,
         )
         self._func = func
+
+    @property
+    @abstractmethod
+    def tool_type(self) -> ToolsTypeEnum:
+        """Return the type of the tool."""
+        pass
 
     @classmethod
     def create_tool(

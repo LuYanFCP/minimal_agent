@@ -6,7 +6,7 @@ import re
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 
-from minimal_agent.tools.base import Tools
+from minimal_agent.tools.base import Tools, ToolsTypeEnum
 from minimal_agent.tools.types import Arg
 
 P = ParamSpec("P")
@@ -29,6 +29,10 @@ class SearxngWebSearch(Tools[P, List[Dict[str, Any]]]):
             ],
             func=self._inner_websearch,
         )
+
+    @property
+    def tool_type(self) -> ToolsTypeEnum:
+        return ToolsTypeEnum.WEB_SEARCH
 
     def clean_html(
         self, html_content: str, main_content_selector: Optional[str] = None
@@ -179,7 +183,7 @@ class SearxngWebSearch(Tools[P, List[Dict[str, Any]]]):
 
         try:
             response = requests.get(url, params=params, timeout=15)
-        
+
             response.raise_for_status()
 
             results = response.json()

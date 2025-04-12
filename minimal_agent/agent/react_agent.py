@@ -43,7 +43,7 @@ You can use the following tools:
 # Instructions
 
 1. Think about the problem step by step
-2. When you need to use a tool, use the following format: 
+2. When you need to use a tool, use the following format:
    Thought: <your reasoning about what to do>
    Action: <tool_name>
    Action Input: <tool parameters in JSON format>
@@ -58,10 +58,14 @@ You can use the following tools:
 # Important Rules
 
 - ALWAYS follow the Thought/Action/Observation/Answer format
+- If using a tool, only one tool at a time.
 - NEVER make up tool results
 - If a tool fails, try a different approach
 - Be thorough and detailed in your reasoning
 - If you can't find an answer, say "I don't know" instead of making something up
+- If python execution is exist, you can generate code and execute it.
+- Do NOT provide an Answer if you are uncertain or unable to complete all required actions
+- If you cannot fully solve the problem, use your memory to explain your limitations and what additional information or tools you would need to complete it.
 - Additionally, please include a reference to the original article at the end of your summary. The reference should be formatted as follows:
 
 [Article Title](URL) by [Author Name], published on [Publication Date] and accessed on [Access Date].
@@ -70,11 +74,10 @@ Make sure to use proper Markdown syntax for headings, lists, and the hyperlink i
 > [The Impact of AI on Society](https://www.example.com/ai-impact-society) by John Doe, published on 2023-06-15 and accessed on 2025-04-06.
 
 """
-            
+
         )
 
     def run(self, input_text: str) -> str:
-        """运行 ReAct Agent (同步方法)"""
         # Create a span for the entire run operation
         with self.tracer.start_as_current_span("react_agent.run") as run_span:
             run_span.set_attribute("input.text", input_text)
@@ -145,7 +148,7 @@ Make sure to use proper Markdown syntax for headings, lists, and the hyperlink i
                         }
                     )
 
-                    if "Answer:" in assistant_message:
+                    if "Answer:" in assistant_message and 'Action:' not in assistant_message:
                         with self.tracer.start_as_current_span("extract_answer"):
                             answer_match = re.search(
                                 r"Answer:\s*(.*?)(?:$|Thought:)",

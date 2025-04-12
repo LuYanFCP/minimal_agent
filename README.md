@@ -95,15 +95,16 @@ Reference:
 The framework follows a modular design with these core components to help you understand agent systems:
 
 - **Agent**: Learn how reasoning loops work and how tools are integrated into decision making
-- **LLM Provider**: Understand how to abstract different language model services 
+- **LLM Provider**: Understand how to abstract different language model services
 - **Tools**: See how reusable capabilities are implemented and connected to agents
 - **Memory**: Explore how conversation context can be maintained across interactions
 
 ## TODO:
 
+- [X]: implement python local executor.
+- [ ]: Support MCP.
 - [ ]: implement PlanAgent.
 - [ ]: implement HybridAgent.
-- [ ]: Support MCP.
 - [ ]: implemet a simple deep search.
 - [ ]: add web ui for agent.
 

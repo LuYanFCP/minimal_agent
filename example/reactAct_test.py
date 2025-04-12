@@ -4,6 +4,7 @@ from minimal_agent.agent.react_agent import ReActAgent
 from minimal_agent.llm.qwen import Qwen
 from minimal_agent.memory.base import ListMemory
 from minimal_agent.tools.websearch import SearxngWebSearch
+from minimal_agent.tools.python_executor import PythonExecutor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
@@ -35,9 +36,10 @@ agent = ReActAgent(
         SearxngWebSearch(
             searx_host=os.environ.get('SEARXNG_HOST', 'http://localhost:8888'),
             count=3,
-        )
+        ),
+        PythonExecutor(is_allow_any=True, storage_path='./test/pic/')
     ],
     memory=ListMemory(),
 )
 
-print(agent.run("What is the trend of Alibaba's stock changes in the past 7 days?"))
+print(agent.run("Draw a chart of Alibaba's stock changes over the last 7 days."))

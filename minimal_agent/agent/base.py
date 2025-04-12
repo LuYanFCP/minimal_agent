@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from minimal_agent.llm.base import LLMProviderType
 from minimal_agent.memory.base import ListMemory, MemoryType
 from minimal_agent.message import Message
-from minimal_agent.tools.base import ToolType
+from minimal_agent.tools.base import ToolType, ToolsTypeEnum
 
 # Add OpenTelemetry imports
 from opentelemetry import trace
@@ -80,7 +80,7 @@ class AgentBase(ABC):
                 if entry["role"] in ["user", "assistant", "system"]:
                     messages.append(
                         Message(
-                            role=entry["role"], 
+                            role=entry["role"],
                             content=entry["content"],
                             metadata=entry["metadata"]
                         )
@@ -88,7 +88,7 @@ class AgentBase(ABC):
                 else:
                     messages.append(
                         Message(
-                            role="assistant", 
+                            role="assistant",
                             content=entry["content"],
                             metadata=entry["metadata"]
                         )
@@ -110,6 +110,19 @@ class AgentBase(ABC):
 
             tool_name = action_match.group(1)
             span.set_attribute("tool.name", tool_name)
+            if 'executor' in tool_name:
+                # code message using markdown
+                code_match = re.search(r"```(.*?)\n(.*?)```", content, re.DOTALL)
+                span.set_attribute("language", code_match.group(1) if code_match else "unknown")
+                span.set_attribute('code', code_match.group(2) if code_match else "unknown")
+                if code_match:
+                    return {
+                        "tool": tool_name,
+                        "params": {
+                            "code": code_match.group(2),
+                        }
+                    }
+
 
             input_match = re.search(r"Action Input:\s*({.*?})", content, re.DOTALL)
             if not input_match:
